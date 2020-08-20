@@ -5,13 +5,17 @@ using UnityEngine;
 public class SideState : MonoBehaviour
 {
     private CubeMaster cubeMaster;
+    public GameObject Cover;
+
+    public bool isActivated;
 
     public enum Orientation
     {
         FRONT,
         RIGHT,
         LEFT,
-        BACK
+        BACK,
+        TOP
     }
 
     public Orientation orientation;
@@ -25,6 +29,9 @@ public class SideState : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        isActivated = false;
+        Cover.gameObject.SetActive(true);
+
         cubeMaster = FindObjectOfType<CubeMaster>();
 
         for (int x = 0; x < 5; x++)
@@ -32,13 +39,26 @@ public class SideState : MonoBehaviour
             for (int y = 0; y < 5; y++)
             {
                 tiles[x, y] = gameObject.transform.Find(x.ToString() + y.ToString()).GetComponent<TileSetter>();
-                tiles[x, y].X = 0;
-                tiles[x, y].Y = 0;
                 tiles[x, y].UpdateMaterial();
                 tiles[x, y].ParentState = this;
                 tiles[x, y].location = new Vector2Int(x, y);
             }
         }
+    }
+
+    public void Activate()
+    {
+        isActivated = true;
+        Cover.gameObject.SetActive(false);
+    }
+
+    public TileSetter GetTile(Vector2Int pos)
+    {
+
+        if (isActivated)
+            return tiles[pos.x, pos.y];
+        else
+            return null;
     }
 
     private void Start()
@@ -48,6 +68,9 @@ public class SideState : MonoBehaviour
 
     public void PressedCell(TileSetter tile)
     {
+        if (!isActivated)
+            return;
+
         cubeMaster.TrySetPlayerPos(tile.location, orientation);
     }
 

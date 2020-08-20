@@ -7,11 +7,11 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TileMat
-  m_Shader: {fileID: 4800000, guid: a3242f5a0145cd54eac4222fa886d3f8, type: 3}
+  m_Name: FlowerOut
+  m_Shader: {fileID: 4800000, guid: 100a892ec70547347971e0ca3352b66d, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 1
+  m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
@@ -40,8 +40,8 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: a693173103d1bd943bc53000096190b3, type: 3}
-        m_Scale: {x: 1, y: -1}
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
@@ -56,8 +56,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AtlasHeight: 22
-    - _AtlasWidth: 48
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -65,6 +63,8 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
+    - _HeightOffset: -5.45
+    - _HeightStrength: 0.16
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -72,12 +72,10 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TileX: 0
-    - _TileY: 0
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _HighlightColor: {r: 0.6792453, g: 0.45923814, b: 0.45923814, a: 0}
+    - _MainColor: {r: 0.5409991, g: 0.71314865, b: 0.9150943, a: 1}
   m_BuildTextureStacks: []
