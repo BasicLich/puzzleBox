@@ -99,8 +99,8 @@
                 float highlightFactor = isBorder * highlightColor.a;
 
                 float4 finalUnlitColor = (1 - highlightFactor) * col + highlightFactor * highlightColor;
-                return finalUnlitColor * saturate(NdotL + 1.1); // + rimDot * 0.2;
-                return finalUnlitColor;
+                //return finalUnlitColor * saturate(NdotL + 1.1); // + rimDot * 0.2;
+                return col;
             }
             ENDCG
         }

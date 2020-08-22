@@ -64,7 +64,7 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _HeightOffset: -5.71
-    - _HeightStrength: 0.2
+    - _HeightStrength: 0.1
     - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
@@ -77,5 +77,5 @@ Material:
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _MainColor: {r: 0.3563545, g: 0.50781065, b: 0.7924528, a: 1}
+    - _MainColor: {r: 0.9245283, g: 0.7419099, b: 0.18025386, a: 1}
   m_BuildTextureStacks: []

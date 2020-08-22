@@ -28,6 +28,9 @@ namespace UnityStandardAssets.Cameras
 		private Quaternion m_PivotTargetRot;
 		private Quaternion m_TransformTargetRot;
 
+        [HideInInspector]
+        public bool hasDrageAtLeastOnce = false;
+
         protected override void Awake()
         {
             base.Awake();
@@ -41,6 +44,11 @@ namespace UnityStandardAssets.Cameras
 
         protected void Update()
         {
+            if(Vector3.Angle(Camera.main.transform.forward, Vector3.forward) > 15f)
+            {
+                hasDrageAtLeastOnce = true;
+            }
+
             if (Input.GetMouseButton(1))
             {
                 HandleRotationMovement();
@@ -57,7 +65,6 @@ namespace UnityStandardAssets.Cameras
                 Cursor.visible = true;
             }
         }
-
 
         private void OnDisable()
         {

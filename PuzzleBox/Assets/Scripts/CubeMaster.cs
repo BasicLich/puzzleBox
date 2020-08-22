@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using UnityStandardAssets.Cameras;
 
 public class CubeMaster : MonoBehaviour
 {
@@ -10,6 +11,22 @@ public class CubeMaster : MonoBehaviour
     public SideState Left;
     public SideState Back;
     public SideState Top;
+
+    public AudioSource Step;
+    public AudioSource Blocked;
+    public AudioSource KeyCollected;
+    public AudioSource FlowerBloom;
+    public AudioSource Soundtrack;
+
+    public BottomCube Bottom;
+
+    public ParticleSystem plantParticles;
+
+    private bool hasClickedSomewhere;
+
+    private FreeLookCam _cam;
+
+    private MouseHint _mouseHint;
 
     private enum MAIN_STATE
     {
@@ -24,15 +41,33 @@ public class CubeMaster : MonoBehaviour
     private MAIN_STATE mainState = MAIN_STATE.OPENING;
 
     private Vector3Int playerPos = new Vector3Int(1, 2, 2); // xy is Front and Back, yz is Left and Right
-
+    
     private void Start()
     {
+        _cam = FindObjectOfType<FreeLookCam>();
         UpdatePlayerPos();
         GoToNextState(); // to front
+        _mouseHint = FindObjectOfType<MouseHint>();
+        Invoke("CheckIfClickPromptNecessary", 2f);
+    }
+
+    private void CheckIfClickPromptNecessary()
+    {
+        if (!hasClickedSomewhere)
+        {
+            _mouseHint.ShowingState = MouseHint.SpriteState.LEFTCLICK;
+        }
     }
 
     public void TrySetPlayerPos(Vector2Int pos, SideState.Orientation orientation)
     {
+        if (!hasClickedSomewhere)
+        {
+            _mouseHint.ShowingState = MouseHint.SpriteState.NOCLICK;
+        }
+        hasClickedSomewhere = true;
+
+
         bool nextToPlayer = false;
         Vector3Int newPlayerPos = Vector3Int.zero;
         switch (orientation)
@@ -74,28 +109,46 @@ public class CubeMaster : MonoBehaviour
                 break;
         }
 
-        if (nextToPlayer && !oneOfTilesIs(getTiles(newPlayerPos), TileSetter.TileState.FILLED))
+
+        if (nextToPlayer)
         {
-            playerPos = newPlayerPos;
-            if(oneOfTilesIs(getTiles(newPlayerPos), TileSetter.TileState.KEY))
+            if (!oneOfTilesIs(getTiles(newPlayerPos), TileSetter.TileState.FILLED))
             {
-                CollectedKey();
-                foreach(var tile in getTiles(newPlayerPos))
+                playerPos = newPlayerPos;
+                if (oneOfTilesIs(getTiles(newPlayerPos), TileSetter.TileState.KEY))
                 {
-                    if(tile.currentState == TileSetter.TileState.KEY)
+                    CollectedKey();
+                    foreach (var tile in getTiles(newPlayerPos))
                     {
-                        tile.currentState = TileSetter.TileState.EMPTY;
-                        tile.SetState(tile.currentState);
+                        if (tile.currentState == TileSetter.TileState.KEY)
+                        {
+                            tile.currentState = TileSetter.TileState.EMPTY;
+                            tile.SetState(tile.currentState);
+                        }
                     }
                 }
+                Step.pitch = Random.Range(0.8f, 1.2f);
+                Step.Play();
+                UpdatePlayerPos();
             }
-            UpdatePlayerPos();
+            else
+            {
+                Blocked.Play();
+            }
+        }
+        else
+        {
+           // nothing
         }
 
     }
 
     private void CollectedKey()
     {
+        if(mainState != MAIN_STATE.TOP)
+        {
+            KeyCollected.Play();
+        }
         GoToNextState();
     }
 
@@ -110,6 +163,8 @@ public class CubeMaster : MonoBehaviour
             case MAIN_STATE.FRONT:
                 Right.Activate();
                 mainState = MAIN_STATE.RIGHT;
+                Invoke("CheckIfDragPromptNecessary", 2f);
+                Soundtrack.PlayDelayed(1f);
                 break;
             case MAIN_STATE.RIGHT:
                 Back.Activate();
@@ -124,13 +179,46 @@ public class CubeMaster : MonoBehaviour
                 mainState = MAIN_STATE.TOP;
                 break;
             case MAIN_STATE.TOP:
+
+                Soundtrack.DOFade(0f, 1f).OnComplete(() =>
+                {
+                    Soundtrack.Stop();
+                });
+
                 FindObjectOfType<Flower>().Bloom();
                 Camera.main.DOFieldOfView(100, 6f).SetEase(Ease.InOutSine);
-                break;
+                FindObjectOfType<FreeLookCam>().transform.DOMoveY(4f, 6f).SetEase(Ease.InOutSine);
+                plantParticles.Play();
+                FlowerBloom.Play();
+
+                DOVirtual.DelayedCall(6f, () =>
+                {
+                    Bottom.Activate();
+                    KeyCollected.Play();
+                });                break;
             case MAIN_STATE.ENDING:
                 break;
         }
         Debug.Log("#### Update to " + mainState);
+    }
+
+    private void CheckIfDragPromptNecessary()
+    {
+        if (!_cam.hasDrageAtLeastOnce)
+        {
+            _mouseHint.ShowingState = MouseHint.SpriteState.RIGHTCLICK;
+        }
+    }
+
+    private void Update()
+    {
+        if(mainState != MAIN_STATE.OPENING && mainState != MAIN_STATE.FRONT)
+        {
+            if (_cam.hasDrageAtLeastOnce)
+            {
+                _mouseHint.ShowingState = MouseHint.SpriteState.NOCLICK;
+            }
+        }
     }
 
     private TileSetter[] getTiles(Vector3Int pos)

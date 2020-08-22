@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class SideState : MonoBehaviour
 {
@@ -8,6 +9,10 @@ public class SideState : MonoBehaviour
     public GameObject Cover;
 
     public bool isActivated;
+
+    public GameObject FlashCube;
+
+    public ParticleSystem particles;
 
     public enum Orientation
     {
@@ -44,12 +49,29 @@ public class SideState : MonoBehaviour
                 tiles[x, y].location = new Vector2Int(x, y);
             }
         }
+
+        FlashCube.SetActive(false);
     }
 
     public void Activate()
     {
         isActivated = true;
         Cover.gameObject.SetActive(false);
+
+        if (orientation == Orientation.FRONT)
+            return;
+
+        FlashCube.SetActive(true);
+
+        Material flashMat = FlashCube.GetComponent<Renderer>().material;
+        flashMat.DOFloat(0f, "_HeightOffset", 0.4f).OnComplete(()=> {
+            flashMat.DOFloat(-0.5f, "_HeightOffset", 0.8f).OnComplete(() =>
+            {
+                FlashCube.SetActive(false);
+            });
+        });
+
+        particles.Play();
     }
 
     public TileSetter GetTile(Vector2Int pos)
